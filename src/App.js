@@ -1,26 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import hpapi from './api/hpapi';
+import Form from './components/Form';
+import CharacterList from './components/CharacterList';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const KEY = process.env.REACT_APP_KEY;
+
+class App extends React.Component {
+  state = { characters: [] };
+  
+  onSearchSubmit = async (term) => {
+    // get request
+    const response = await hpapi.get(`/characters/?key=${KEY}`, {
+      params: { name: term }
+    });
+
+    this.setState({ characters: response.data });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Welcome to HP-World</h1>
+        <div>
+          Search by character name, house or patronous
+        </div>
+        <Form onSubmit={this.onSearchSubmit} />
+        <CharacterList characters={this.state.characters} />
+      </div>
+    );
+  }
 }
 
 export default App;
